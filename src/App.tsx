@@ -144,6 +144,10 @@ export default function App() {
           Data based on Valorant patch 12.06. Reroll does not consume pool
           entries; Accept does.
         </p>
+        <p className="muted">
+          Not affiliated with or endorsed by Riot Games. Valorant is a trademark
+          of Riot Games, Inc.
+        </p>
       </footer>
     </div>
   );

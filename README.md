@@ -29,3 +29,7 @@ Output goes to `dist/`.
 ## Tech
 
 React, TypeScript, Vite. No backend — everything runs client-side.
+
+## Disclaimer
+
+Not affiliated with or endorsed by Riot Games. Valorant is a trademark of Riot Games, Inc.
