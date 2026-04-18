@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/crosshairpreview.tsx","./src/components/historylist.tsx","./src/components/loadoutcard.tsx","./src/components/poolstatus.tsx","./src/data/armor.ts","./src/data/weapons.ts","./src/lib/crosshair-generator.ts","./src/lib/pools.ts","./src/lib/randomizer.ts","./src/lib/storage.ts","./src/types/loadout.ts"],"version":"5.9.3"}
