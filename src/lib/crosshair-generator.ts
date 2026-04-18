@@ -1,4 +1,5 @@
 import type { CrosshairSettings } from "../types/loadout";
+import { randomChance, randomFloat, randomInt } from "./rng";
 
 /**
  * Valorant crosshair code generator aligned to the live VCRDB builder.
@@ -12,7 +13,7 @@ import type { CrosshairSettings } from "../types/loadout";
  * community generator instead of guessing from scattered sample codes.
  */
 
-const PRESET_COLORS = [
+export const PRESET_COLORS = [
   "#FFFFFF",
   "#00FF00",
   "#7FFF00",
@@ -20,16 +21,8 @@ const PRESET_COLORS = [
   "#FFFF00",
   "#00FFFF",
   "#FF00FF",
-  "#FF0000"
+  "#FF0000",
 ] as const;
-
-function randInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function chance(probability: number): boolean {
-  return Math.random() < probability;
-}
 
 function round3(value: number): number {
   return Math.round(value * 1000) / 1000;
@@ -44,11 +37,11 @@ function clampFloat(value: number, min: number, max: number): number {
 }
 
 function weightedZero(max: number, zeroChance = 0.18): number {
-  return chance(zeroChance) ? 0 : randInt(1, max);
+  return randomChance(zeroChance) ? 0 : randomInt(1, max);
 }
 
 function randomHexByte(min = 0, max = 255): string {
-  return randInt(min, max).toString(16).padStart(2, "0").toUpperCase();
+  return randomInt(min, max).toString(16).padStart(2, "0").toUpperCase();
 }
 
 function randomCustomColor(): string {
@@ -57,7 +50,7 @@ function randomCustomColor(): string {
   return `${randomHexByte()}${randomHexByte()}${randomHexByte()}${randomHexByte(128, 255)}`;
 }
 
-interface EncodedLine {
+export interface EncodedLine {
   enabled: boolean;
   width: number;
   length: number;
@@ -71,7 +64,7 @@ interface EncodedLine {
   firingErrorMultiplier: number;
 }
 
-interface PrimaryState {
+export interface PrimaryState {
   color: number;
   customColorEnabled: boolean;
   customColorValue: string;
@@ -86,7 +79,7 @@ interface PrimaryState {
   outer: EncodedLine;
 }
 
-const DEFAULT_PRIMARY: PrimaryState = {
+export const DEFAULT_PRIMARY: PrimaryState = {
   color: 0,
   customColorEnabled: false,
   customColorValue: "FFFFFFFF",
@@ -108,7 +101,7 @@ const DEFAULT_PRIMARY: PrimaryState = {
     movementErrorEnabled: false,
     movementErrorMultiplier: 1,
     firingErrorEnabled: true,
-    firingErrorMultiplier: 1
+    firingErrorMultiplier: 1,
   },
   outer: {
     enabled: true,
@@ -121,8 +114,8 @@ const DEFAULT_PRIMARY: PrimaryState = {
     movementErrorEnabled: true,
     movementErrorMultiplier: 1,
     firingErrorEnabled: true,
-    firingErrorMultiplier: 1
-  }
+    firingErrorMultiplier: 1,
+  },
 };
 
 function randomLine(options: {
@@ -133,7 +126,7 @@ function randomLine(options: {
   defaultMovementError: boolean;
   defaultFiringError: boolean;
 }): EncodedLine {
-  const enabled = chance(options.showChance);
+  const enabled = randomChance(options.showChance);
 
   if (!enabled) {
     return {
@@ -147,19 +140,23 @@ function randomLine(options: {
       movementErrorEnabled: options.defaultMovementError,
       movementErrorMultiplier: 1,
       firingErrorEnabled: options.defaultFiringError,
-      firingErrorMultiplier: 1
+      firingErrorMultiplier: 1,
     };
   }
 
-  const verticalEnabled = chance(0.48);
-  let length = verticalEnabled ? weightedZero(options.horizontalMax) : randInt(1, options.horizontalMax);
-  let verticalLength = verticalEnabled ? weightedZero(options.verticalMax) : length;
+  const verticalEnabled = randomChance(0.48);
+  let length = verticalEnabled
+    ? weightedZero(options.horizontalMax)
+    : randomInt(1, options.horizontalMax);
+  let verticalLength = verticalEnabled
+    ? weightedZero(options.verticalMax)
+    : length;
 
   if (verticalEnabled && length === 0 && verticalLength === 0) {
-    if (chance(0.5)) {
-      length = randInt(1, options.horizontalMax);
+    if (randomChance(0.5)) {
+      length = randomInt(1, options.horizontalMax);
     } else {
-      verticalLength = randInt(1, options.verticalMax);
+      verticalLength = randomInt(1, options.verticalMax);
     }
   }
 
@@ -169,37 +166,37 @@ function randomLine(options: {
     length,
     verticalEnabled,
     verticalLength,
-    offset: randInt(0, options.offsetMax),
-    alpha: clampFloat(Math.random(), 0, 1),
-    movementErrorEnabled: chance(0.45),
-    movementErrorMultiplier: clampFloat(Math.random() * 3, 0, 3),
-    firingErrorEnabled: chance(0.55),
-    firingErrorMultiplier: clampFloat(Math.random() * 3, 0, 3)
+    offset: randomInt(0, options.offsetMax),
+    alpha: clampFloat(randomFloat(), 0, 1),
+    movementErrorEnabled: randomChance(0.45),
+    movementErrorMultiplier: clampFloat(randomFloat() * 3, 0, 3),
+    firingErrorEnabled: randomChance(0.55),
+    firingErrorMultiplier: clampFloat(randomFloat() * 3, 0, 3),
   };
 }
 
 function randomPrimary(): PrimaryState {
-  const customColorEnabled = chance(0.82);
-  const presetColor = randInt(0, PRESET_COLORS.length - 1);
+  const customColorEnabled = randomChance(0.82);
+  const presetColor = randomInt(0, PRESET_COLORS.length - 1);
 
   return {
     color: customColorEnabled ? 8 : presetColor,
     customColorEnabled,
     customColorValue: customColorEnabled ? randomCustomColor() : "FFFFFFFF",
-    outlinesEnabled: chance(0.78),
-    outlineWidth: randInt(1, 6),
-    outlineAlpha: clampFloat(Math.random(), 0, 1),
-    dotEnabled: chance(0.65),
-    dotWidth: randInt(1, 6),
-    dotAlpha: clampFloat(Math.random(), 0, 1),
-    overwriteFireMultiplier: chance(0.35),
+    outlinesEnabled: randomChance(0.78),
+    outlineWidth: randomInt(1, 6),
+    outlineAlpha: clampFloat(randomFloat(), 0, 1),
+    dotEnabled: randomChance(0.65),
+    dotWidth: randomInt(1, 6),
+    dotAlpha: clampFloat(randomFloat(), 0, 1),
+    overwriteFireMultiplier: randomChance(0.35),
     inner: randomLine({
       showChance: 0.86,
       horizontalMax: 20,
       verticalMax: 20,
       offsetMax: 20,
       defaultMovementError: false,
-      defaultFiringError: true
+      defaultFiringError: true,
     }),
     outer: randomLine({
       showChance: 0.84,
@@ -207,12 +204,12 @@ function randomPrimary(): PrimaryState {
       verticalMax: 20,
       offsetMax: 40,
       defaultMovementError: true,
-      defaultFiringError: true
-    })
+      defaultFiringError: true,
+    }),
   };
 }
 
-function previewColor(primary: PrimaryState): string {
+export function previewColor(primary: PrimaryState): string {
   return primary.customColorEnabled
     ? `#${primary.customColorValue}`
     : PRESET_COLORS[clampInt(primary.color, 0, PRESET_COLORS.length - 1)];
@@ -229,7 +226,7 @@ function encodeLine(
   defaults: EncodedLine,
   maxHorizontalLength: number,
   maxVerticalLength: number,
-  maxOffset: number
+  maxOffset: number,
 ): void {
   const line: EncodedLine = {
     enabled: value.enabled,
@@ -242,7 +239,7 @@ function encodeLine(
     movementErrorEnabled: value.movementErrorEnabled,
     movementErrorMultiplier: clampFloat(value.movementErrorMultiplier, 0, 3),
     firingErrorEnabled: value.firingErrorEnabled,
-    firingErrorMultiplier: clampFloat(value.firingErrorMultiplier, 0, 3)
+    firingErrorMultiplier: clampFloat(value.firingErrorMultiplier, 0, 3),
   };
 
   if (line.enabled !== defaults.enabled) {
@@ -272,15 +269,21 @@ function encodeLine(
   if (line.firingErrorEnabled !== defaults.firingErrorEnabled) {
     append(parts, `${prefix}f`, Number(line.firingErrorEnabled));
   }
-  if (line.movementErrorEnabled && line.movementErrorMultiplier !== defaults.movementErrorMultiplier) {
+  if (
+    line.movementErrorEnabled &&
+    line.movementErrorMultiplier !== defaults.movementErrorMultiplier
+  ) {
     append(parts, `${prefix}s`, line.movementErrorMultiplier);
   }
-  if (line.firingErrorEnabled && line.firingErrorMultiplier !== defaults.firingErrorMultiplier) {
+  if (
+    line.firingErrorEnabled &&
+    line.firingErrorMultiplier !== defaults.firingErrorMultiplier
+  ) {
     append(parts, `${prefix}e`, line.firingErrorMultiplier);
   }
 }
 
-function buildCode(primary: PrimaryState): string {
+export function buildCode(primary: PrimaryState): string {
   const state: PrimaryState = {
     ...primary,
     color: clampInt(primary.color, 0, 8),
@@ -291,7 +294,7 @@ function buildCode(primary: PrimaryState): string {
     dotAlpha: clampFloat(primary.dotAlpha, 0, 1),
     overwriteFireMultiplier: primary.overwriteFireMultiplier,
     inner: primary.inner,
-    outer: primary.outer
+    outer: primary.outer,
   };
 
   const parts: string[] = ["0", "P"];
@@ -336,9 +339,7 @@ function buildCode(primary: PrimaryState): string {
   return parts.join(";");
 }
 
-export function generateCrosshair(): CrosshairSettings {
-  const primary = randomPrimary();
-
+export function primaryToSettings(primary: PrimaryState): CrosshairSettings {
   return {
     code: buildCode(primary),
     color: previewColor(primary),
@@ -356,7 +357,7 @@ export function generateCrosshair(): CrosshairSettings {
         ? primary.inner.verticalLength
         : primary.inner.length,
       thickness: primary.inner.width,
-      offset: primary.inner.offset
+      offset: primary.inner.offset,
     },
     outerLines: {
       show: primary.outer.enabled,
@@ -366,7 +367,15 @@ export function generateCrosshair(): CrosshairSettings {
         ? primary.outer.verticalLength
         : primary.outer.length,
       thickness: primary.outer.width,
-      offset: primary.outer.offset
-    }
+      offset: primary.outer.offset,
+    },
   };
+}
+
+export function generateCrosshair(): {
+  settings: CrosshairSettings;
+  primary: PrimaryState;
+} {
+  const primary = randomPrimary();
+  return { settings: primaryToSettings(primary), primary };
 }

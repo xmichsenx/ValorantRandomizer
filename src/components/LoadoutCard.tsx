@@ -1,11 +1,17 @@
 import { useState } from "react";
-import type { Candidate } from "../types/loadout";
+import type { Candidate, CrosshairSettings } from "../types/loadout";
+import type { PrimaryState } from "../lib/crosshair-generator";
 import { CrosshairPreview } from "./CrosshairPreview";
+import { CrosshairEditor } from "./CrosshairEditor";
 
 interface Props {
   candidate: Candidate;
   onReroll: () => void;
   onAccept: () => void;
+  onCrosshairChange: (
+    crosshair: CrosshairSettings,
+    primary: PrimaryState,
+  ) => void;
 }
 
 function CrosshairCode({ code }: { code: string }) {
@@ -48,7 +54,12 @@ function CrosshairCode({ code }: { code: string }) {
   );
 }
 
-export function LoadoutCard({ candidate, onReroll, onAccept }: Props) {
+export function LoadoutCard({
+  candidate,
+  onReroll,
+  onAccept,
+  onCrosshairChange,
+}: Props) {
   const total = candidate.weapon.cost + candidate.armor.cost;
   return (
     <section className="card">
@@ -60,6 +71,10 @@ export function LoadoutCard({ candidate, onReroll, onAccept }: Props) {
         <div className="crosshair-slot">
           <CrosshairPreview crosshair={candidate.crosshair} />
           <CrosshairCode code={candidate.crosshair.code} />
+          <CrosshairEditor
+            primary={candidate.crosshairPrimary}
+            onChange={onCrosshairChange}
+          />
           <CrosshairDetails candidate={candidate} />
         </div>
 

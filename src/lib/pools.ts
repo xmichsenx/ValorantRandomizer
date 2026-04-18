@@ -1,5 +1,6 @@
 import { ARMOR } from "../data/armor";
 import { WEAPONS } from "../data/weapons";
+import { randomFrom } from "./rng";
 import type { PoolState } from "../types/loadout";
 
 export function createInitialPool(): PoolState {
@@ -7,12 +8,8 @@ export function createInitialPool(): PoolState {
     weaponIds: WEAPONS.map((w) => w.id),
     armorIds: ARMOR.map((a) => a.id),
     weaponsResetCount: 0,
-    armorResetCount: 0
+    armorResetCount: 0,
   };
-}
-
-function randomFrom<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
 }
 
 export function pickRandomWeaponId(pool: PoolState): string {
@@ -31,7 +28,7 @@ export function pickRandomArmorId(pool: PoolState): string {
 export function consume(
   pool: PoolState,
   weaponId: string,
-  armorId: string
+  armorId: string,
 ): { next: PoolState; weaponsReset: boolean; armorReset: boolean } {
   let weaponIds = pool.weaponIds.filter((id) => id !== weaponId);
   let armorIds = pool.armorIds.filter((id) => id !== armorId);
@@ -53,9 +50,9 @@ export function consume(
       weaponIds,
       armorIds,
       weaponsResetCount: pool.weaponsResetCount + (weaponsReset ? 1 : 0),
-      armorResetCount: pool.armorResetCount + (armorReset ? 1 : 0)
+      armorResetCount: pool.armorResetCount + (armorReset ? 1 : 0),
     },
     weaponsReset,
-    armorReset
+    armorReset,
   };
 }

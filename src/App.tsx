@@ -2,10 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { HistoryList } from "./components/HistoryList";
 import { LoadoutCard } from "./components/LoadoutCard";
 import { PoolStatus } from "./components/PoolStatus";
+import { RollSettingsPanel } from "./components/RollSettingsPanel";
 import { consume, createInitialPool } from "./lib/pools";
 import { rollCandidate } from "./lib/randomizer";
 import { clearState, loadState, saveState } from "./lib/storage";
-import type { AcceptedLoadout, Candidate, PoolState } from "./types/loadout";
+import type {
+  AcceptedLoadout,
+  Candidate,
+  PoolState,
+  RollSettings,
+} from "./types/loadout";
+import type { PrimaryState } from "./lib/crosshair-generator";
+import type { CrosshairSettings } from "./types/loadout";
 
 export default function App() {
   const initial = useMemo(() => loadState(), []);
@@ -19,7 +27,11 @@ export default function App() {
     weapons: boolean;
     armor: boolean;
   } | null>(null);
-  const [candidate, setCandidate] = useState<Candidate>(() =>
+  const [settings, setSettings] = useState<RollSettings>({
+    budget: null,
+    excludedCategories: [],
+  });
+  const [candidate, setCandidate] = useState<Candidate | null>(() =>
     rollCandidate(initial?.pool ?? createInitialPool()),
   );
 
@@ -28,11 +40,12 @@ export default function App() {
   }, [pool, history]);
 
   const handleReroll = () => {
-    setCandidate(rollCandidate(pool));
+    setCandidate(rollCandidate(pool, settings));
     setLastReset(null);
   };
 
   const handleAccept = () => {
+    if (!candidate) return;
     const accepted: AcceptedLoadout = { ...candidate, acceptedAt: Date.now() };
     const { next, weaponsReset, armorReset } = consume(
       pool,
@@ -42,7 +55,22 @@ export default function App() {
     setHistory((h) => [accepted, ...h]);
     setPool(next);
     setLastReset({ weapons: weaponsReset, armor: armorReset });
-    setCandidate(rollCandidate(next));
+    setCandidate(rollCandidate(next, settings));
+  };
+
+  const handleCrosshairChange = (
+    crosshair: CrosshairSettings,
+    primary: PrimaryState,
+  ) => {
+    if (!candidate) return;
+    setCandidate({ ...candidate, crosshair, crosshairPrimary: primary });
+  };
+
+  const handleSettingsChange = (next: RollSettings) => {
+    setSettings(next);
+    // Re-roll with new settings so the current candidate always matches filters
+    setCandidate(rollCandidate(pool, next));
+    setLastReset(null);
   };
 
   const handleClearHistory = () => {
@@ -54,7 +82,7 @@ export default function App() {
     setPool(fresh);
     setHistory([]);
     setLastReset(null);
-    setCandidate(rollCandidate(fresh));
+    setCandidate(rollCandidate(fresh, settings));
     clearState();
   };
 
@@ -72,12 +100,40 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        <LoadoutCard
-          candidate={candidate}
-          onReroll={handleReroll}
-          onAccept={handleAccept}
-        />
+        {candidate ? (
+          <LoadoutCard
+            candidate={candidate}
+            onReroll={handleReroll}
+            onAccept={handleAccept}
+            onCrosshairChange={handleCrosshairChange}
+          />
+        ) : (
+          <section className="card">
+            <header className="card-header">
+              <h2>No valid loadout</h2>
+            </header>
+            <div className="card-body">
+              <p>
+                No weapon + armor combo fits the current budget and category
+                filters. Adjust your settings or reset the pool.
+              </p>
+            </div>
+            <footer className="card-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleReroll}
+              >
+                Retry
+              </button>
+            </footer>
+          </section>
+        )}
         <aside className="sidebar">
+          <RollSettingsPanel
+            settings={settings}
+            onChange={handleSettingsChange}
+          />
           <PoolStatus pool={pool} lastReset={lastReset} />
           <HistoryList history={history} onClear={handleClearHistory} />
         </aside>

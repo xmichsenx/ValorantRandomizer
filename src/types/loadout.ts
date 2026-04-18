@@ -52,11 +52,17 @@ export interface Candidate {
   weapon: Weapon;
   armor: Armor;
   crosshair: CrosshairSettings;
+  crosshairPrimary: import("../lib/crosshair-generator").PrimaryState;
   rolledAt: number;
 }
 
 export interface AcceptedLoadout extends Candidate {
   acceptedAt: number;
+}
+
+export interface RollSettings {
+  budget: number | null;
+  excludedCategories: WeaponCategory[];
 }
 
 export interface PoolState {

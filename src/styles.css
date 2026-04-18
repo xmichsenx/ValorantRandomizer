@@ -25,7 +25,13 @@ body,
 body {
   background: radial-gradient(ellipse at top, #142030, var(--bg) 60%);
   color: var(--text);
-  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    Roboto,
+    Arial,
+    sans-serif;
 }
 
 .app {
@@ -227,7 +233,10 @@ body {
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .btn-primary {
@@ -321,4 +330,169 @@ body {
 
 .app-footer {
   text-align: center;
+}
+
+/* ── Roll Settings Panel ─────────────────────────── */
+
+.settings-panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.settings-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+.settings-group {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.settings-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.settings-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.settings-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.settings-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* ── Crosshair Editor ────────────────────────────── */
+
+.crosshair-editor {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--bg-elev-2);
+  margin-top: 8px;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.editor-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.editor-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0 0 8px;
+}
+
+.editor-fieldset legend {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.editor-slider {
+  display: grid;
+  grid-template-columns: 80px 1fr 44px;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.82rem;
+  margin: 4px 0;
+}
+
+.editor-slider-label {
+  color: var(--muted);
+}
+
+.editor-slider-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.editor-slider input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.editor-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.editor-color-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.editor-color-swatch {
+  width: 24px;
+  height: 24px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.editor-color-swatch.active {
+  border-color: var(--text);
+}
+
+.editor-color-custom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.editor-color-custom input[type="color"] {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editor-color-custom .active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn-sm {
+  font-size: 0.82rem;
+  padding: 4px 10px;
 }
