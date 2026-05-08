@@ -5,9 +5,9 @@ Random loadout generator for Valorant. Rolls a weapon, armor, and crosshair for 
 ## Features
 
 - Random weapon + armor + crosshair combos from a depletion pool (no repeats until everything's been picked)
-- Budget filter — set a max credit limit
-- Category filter — exclude weapon types you don't want
-- Crosshair editor — tweak the generated crosshair or just use it as-is
+- Budget filter: set a max credit limit
+- Category filter: exclude weapon types you don't want
+- Crosshair editor: tweak the generated crosshair or just use it as-is
 - Crosshair codes are importable directly into Valorant
 - History of accepted loadouts, persisted in localStorage
 
@@ -28,7 +28,7 @@ Output goes to `dist/`.
 
 ## Tech
 
-React, TypeScript, Vite. No backend — everything runs client-side.
+React, TypeScript, Vite. No backend, everything runs client-side.
 
 ## Disclaimer
 
